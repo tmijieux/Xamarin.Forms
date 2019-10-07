@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -364,7 +365,7 @@ namespace Xamarin.Forms
 
 			OnNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 		}
-		IReadOnlyList<ShellItem> IShellController.GetItems() => ((ShellItemCollection)Items).VisibleItems;
+		ReadOnlyCollection<ShellItem> IShellController.GetItems() => ((ShellItemCollection)Items).VisibleItems;
 
 		event NotifyCollectionChangedEventHandler IShellController.ItemsCollectionChanged
 		{
