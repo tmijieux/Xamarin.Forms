@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Linq;
 using Xamarin.Forms.Xaml;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -34,9 +35,10 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-		protected override void Init()
+		protected override async void Init()
 		{
 			BindingContext = new Issue7924ViewModel();
+			await ((Issue7924ViewModel)BindingContext).UpdatePositionAsync();
 		}
 	}
 
@@ -71,9 +73,21 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			_source = new List<Issue7924Model>();
 			CreateMonkeyCollection();
+		}
+
+		public async Task UpdatePositionAsync()
+		{
+			CurrentItem = Monkeys.Skip(3).FirstOrDefault();
+			OnPropertyChanged("CurrentItem");
+			await Task.Delay(3000);
+
+			Position = 5;
+			OnPropertyChanged("Position");
+			await Task.Delay(3000);
 
 			CurrentItem = Monkeys.Skip(3).FirstOrDefault();
 			OnPropertyChanged("CurrentItem");
+
 		}
 
 		void CreateMonkeyCollection()
