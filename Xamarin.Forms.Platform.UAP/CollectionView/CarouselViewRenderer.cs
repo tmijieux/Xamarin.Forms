@@ -150,6 +150,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_itemHeight = GetItemHeight();
 			_itemWidth = GetItemWidth();
 			UpdateItemsSource();
+			UpdateInitialPosition();
 		}
 
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
@@ -236,6 +237,22 @@ namespace Xamarin.Forms.Platform.UWP
 				if (listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 					_scrollViewer.VerticalSnapPointsAlignment = GetWindowsSnapPointsAlignment(listItemsLayout.SnapPointsAlignment);
 			}
+		}
+
+		void UpdateInitialPosition()
+		{
+			int initialPosition = 0;
+
+			if (CarouselView.CurrentItem != null)
+			{
+				initialPosition = CarouselView.GetPositionForItem(CarouselView.CurrentItem);
+				CarouselView.Position = initialPosition;
+			}
+			else
+				initialPosition = CarouselView.Position;
+
+			CarouselView.ScrollTo(initialPosition, position: ScrollToPosition.Center, animate: false);
+
 		}
 
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)

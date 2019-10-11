@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 7924, "[Android/iOS] Setting CarouselView.CurrentItem to an item doesn't display that item")]
+	[Issue(IssueTracker.Github, 7924, "[Android/iOS/UWP] Setting CarouselView.CurrentItem to an item doesn't display that item")]
 	public partial class Issue7924 : TestContentPage
 	{
 		public Issue7924()
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-		protected override async void Init()
+		protected override void Init()
 		{
 			BindingContext = new Issue7924ViewModel();
 		}
