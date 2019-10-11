@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Linq;
 using Xamarin.Forms.Xaml;
-using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -38,7 +37,6 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override async void Init()
 		{
 			BindingContext = new Issue7924ViewModel();
-			await ((Issue7924ViewModel)BindingContext).UpdatePositionAsync();
 		}
 	}
 
@@ -54,6 +52,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Issue7924ViewModel : BindableObject
 	{
+		const int UpdatePositionDelay = 2000;
+
 		readonly IList<Issue7924Model> _source;
 
 		public ObservableCollection<Issue7924Model> Monkeys { get; private set; }
@@ -73,23 +73,11 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			_source = new List<Issue7924Model>();
 			CreateMonkeyCollection();
-		}
-
-		public async Task UpdatePositionAsync()
-		{
-			CurrentItem = Monkeys.Skip(3).FirstOrDefault();
-			OnPropertyChanged("CurrentItem");
-			await Task.Delay(3000);
-
-			Position = 5;
-			OnPropertyChanged("Position");
-			await Task.Delay(3000);
 
 			CurrentItem = Monkeys.Skip(3).FirstOrDefault();
 			OnPropertyChanged("CurrentItem");
-
 		}
-
+  
 		void CreateMonkeyCollection()
 		{
 			_source.Add(new Issue7924Model

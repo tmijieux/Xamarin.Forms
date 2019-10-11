@@ -249,6 +249,18 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object GetItemForPosition(int index)
+		{
+			return GetItemForPosition(this, index);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public int GetPositionForItem(object item)
+		{
+			return GetPositionForItem(this, item);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetCurrentItem(object item)
 		{
 			SetValueFromRenderer(CurrentItemProperty, item);

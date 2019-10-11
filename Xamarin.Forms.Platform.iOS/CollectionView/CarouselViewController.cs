@@ -81,6 +81,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateInitialPosition()
 		{
+			if (_carouselView.CurrentItem != null)
+			{
+				var initialPosition = _carouselView.GetPositionForItem(_carouselView.CurrentItem);
+				_carouselView.Position = initialPosition;
+			}
+
 			if (_carouselView.Position != 0)
 				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center, false);
 		}
