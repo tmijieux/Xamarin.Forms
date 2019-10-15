@@ -8,6 +8,7 @@ using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
 using WScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using WSnapPointsType = Windows.UI.Xaml.Controls.SnapPointsType;
 using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlignment;
+using System.Collections;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -223,7 +224,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (CarouselView.CurrentItem != null)
 			{
-				initialPosition = CarouselView.GetPositionForItem(CarouselView.CurrentItem);
+				var items = CarouselView.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == CarouselView.CurrentItem)
+					{
+						initialPosition = n;
+						break;
+					}
+				}
 				CarouselView.Position = initialPosition;
 			}
 			else
