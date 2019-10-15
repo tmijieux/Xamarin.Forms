@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CoreGraphics;
@@ -83,7 +84,20 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_carouselView.CurrentItem != null)
 			{
-				var initialPosition = _carouselView.GetPositionForItem(_carouselView.CurrentItem);
+				int position = 0;
+
+				var items = _carouselView.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == _carouselView.CurrentItem)
+					{
+						position = n;
+						break;
+					}
+				}
+
+				var initialPosition = position;
 				_carouselView.Position = initialPosition;
 			}
 

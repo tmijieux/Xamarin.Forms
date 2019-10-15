@@ -51,6 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
+			UpdateEmptyView();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -187,7 +188,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Carousel.CurrentItem != null)
 			{
-				_initialPosition = Carousel.GetPositionForItem(Carousel.CurrentItem);
+				int position = 0;
+
+				var items = Carousel.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == Carousel.CurrentItem)
+					{
+						position = n;
+						break;
+					}
+				}
+
+				_initialPosition = position;
 				Carousel.Position = _initialPosition;
 			}
    			else
