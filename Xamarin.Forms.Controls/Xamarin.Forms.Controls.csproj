@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GalleryPages\CollectionViewGalleries\CarouselViewGalleries\" />
+    <Folder Include="GalleryPages\SwipeView\" />
   </ItemGroup>
   
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
