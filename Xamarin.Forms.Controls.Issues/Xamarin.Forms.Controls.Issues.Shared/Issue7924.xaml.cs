@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue7924()
 		{
 #if APP
-			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
+			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
 			Title = "Issue 7924";
 			InitializeComponent();
 #endif
@@ -57,18 +57,9 @@ namespace Xamarin.Forms.Controls.Issues
 		readonly IList<Issue7924Model> _source;
 
 		public ObservableCollection<Issue7924Model> Monkeys { get; private set; }
-		public IList<Issue7924Model> EmptyMonkeys { get; private set; }
-		public Issue7924Model PreviousMonkey { get; set; }
-		public Issue7924Model CurrentMonkey { get; set; }
 		public Issue7924Model CurrentItem { get; set; }
-		public int PreviousPosition { get; set; }
-		public int CurrentPosition { get; set; }
 		public int Position { get; set; }
-
-		public ICommand FilterCommand => new Command<string>(FilterItems);
-		public ICommand ItemChangedCommand => new Command<Issue7924Model>(ItemChanged);
-		public ICommand PositionChangedCommand => new Command<int>(PositionChanged);
-
+  
 		public Issue7924ViewModel()
 		{
 			_source = new List<Issue7924Model>();
@@ -217,41 +208,6 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 
 			Monkeys = new ObservableCollection<Issue7924Model>(_source);
-		}
-
-		void FilterItems(string filter)
-		{
-			var filteredItems = _source.Where(monkey => monkey.Name.ToLower().Contains(filter.ToLower())).ToList();
-			foreach (var monkey in _source)
-			{
-				if (!filteredItems.Contains(monkey))
-				{
-					Monkeys.Remove(monkey);
-				}
-				else
-				{
-					if (!Monkeys.Contains(monkey))
-					{
-						Monkeys.Add(monkey);
-					}
-				}
-			}
-		}
-
-		void ItemChanged(Issue7924Model item)
-		{
-			PreviousMonkey = CurrentMonkey;
-			CurrentMonkey = item;
-			OnPropertyChanged("PreviousMonkey");
-			OnPropertyChanged("CurrentMonkey");
-		}
-
-		void PositionChanged(int position)
-		{
-			PreviousPosition = CurrentPosition;
-			CurrentPosition = position;
-			OnPropertyChanged("PreviousPosition");
-			OnPropertyChanged("CurrentPosition");
 		}
 	}
 }

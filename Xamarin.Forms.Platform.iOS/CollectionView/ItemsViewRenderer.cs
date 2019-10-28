@@ -15,14 +15,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected TItemsView ItemsView => Element;
 
-		public ItemsViewRenderer()
-		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView, TViewController>));
-		}
+
 
 		public override UIViewController ViewController => Controller;
 
 		protected TViewController Controller { get; private set; }
+
+		protected ItemsViewRenderer()
+		{
+			AutoPackage = false;
+		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
