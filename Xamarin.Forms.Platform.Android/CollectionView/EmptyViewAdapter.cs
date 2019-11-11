@@ -1,4 +1,6 @@
+using System;
 using Android.Content;
+using Android.Content.Res;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Object = Java.Lang.Object;
@@ -7,10 +9,12 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class EmptyViewAdapter : RecyclerView.Adapter
 	{
+		int _headerHeight;
 		int _headerViewType;
 		object _headerView;
 		DataTemplate _headerViewTemplate;
 
+		int _footerHeight;
 		int _footerViewType;
 		object _footerView;
 		DataTemplate _footerViewTemplate;
@@ -26,6 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_headerView = value;
 				_headerViewType += 1;
+				UpdateHeaderFooterHeight(_headerView, true);
 			}
 		}
 
@@ -36,6 +41,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_headerViewTemplate = value;
 				_headerViewType += 1;
+				UpdateHeaderFooterHeight(_headerViewTemplate, true);
 			}
 		}
 
@@ -46,6 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_footerView = value;
 				_footerViewType += 1;
+				UpdateHeaderFooterHeight(_footerView, false);
 			}
 		}
 
@@ -56,6 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_footerViewTemplate = value;
 				_footerViewType += 1;
+				UpdateHeaderFooterHeight(_footerViewTemplate, false);
 			}
 		}
 
@@ -217,14 +225,14 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(content is View formsView))
 				{
 					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
-					return SimpleViewHolder.FromText(content?.ToString(), context, () => parent.Width, () => parent.Height - GetHeaderFooterHeight(parent));
+					return SimpleViewHolder.FromText(content?.ToString(), context);
 				}
 
 				// EmptyView is a Forms View; display that
-				return SimpleViewHolder.FromFormsView(formsView, context, () => parent.Width, () => parent.Height - GetHeaderFooterHeight(parent));
+				return SimpleViewHolder.FromFormsView(formsView, context, () => GetWidth(parent), () => GetHeight(parent));
 			}
 
-			var itemContentView = new SizedItemContentView(parent.Context, () => parent.Width, () => parent.Height - GetHeaderFooterHeight(parent));
+			var itemContentView = new SizedItemContentView(parent.Context, () => GetWidth(parent), () => GetHeight(parent));
 			return new TemplatedItemViewHolder(itemContentView, template, isSelectionEnabled: false);
 		}
 
@@ -257,17 +265,49 @@ namespace Xamarin.Forms.Platform.Android
 			return (Header == null && HeaderTemplate == null) ? position == 0 : position == 1;
 		}
 
-		int GetHeaderFooterHeight(ViewGroup parent)
+		int GetHeight(ViewGroup parent)
 		{
-			int height = 0;
+			var headerFooterHeight = parent.Context.ToPixels(_headerHeight + _footerHeight);
+			return Math.Abs((int)(parent.Height - headerFooterHeight));
+		}
 
-			if (parent.ChildCount > 0)
+		int GetWidth(ViewGroup parent)
+		{
+			var orientation = parent.Context.Resources.Configuration.Orientation;
+   			var request = ItemsView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+
+			if (orientation == Orientation.Portrait)
+				return (int)parent.Context.ToPixels(request.Request.Width);
+
+			if (orientation == Orientation.Landscape)
+				return (int) parent.Context.ToPixels(request.Request.Height);
+	
+			return parent.Width;
+		}
+
+		void UpdateHeaderFooterHeight(object item, bool isHeader)
+		{
+			if (item == null)
+				return;
+
+			var sizeRequest = new SizeRequest(new Size(0, 0));
+
+			if (item is View view)
+				sizeRequest = view.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+
+			if (item is DataTemplate dataTemplate)
 			{
-				var child = parent.GetChildAt(0);
-				height = child.Height;
+
+				var content = dataTemplate.CreateContent() as View;
+				sizeRequest = content.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 			}
 
-			return height;
+			var itemHeight = (int)sizeRequest.Request.Height;
+
+			if (isHeader)
+				_headerHeight = itemHeight;
+			else
+				_footerHeight = itemHeight;
 		}
 	}
 }

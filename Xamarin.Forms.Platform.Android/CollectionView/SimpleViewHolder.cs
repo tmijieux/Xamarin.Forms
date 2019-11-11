@@ -20,22 +20,6 @@ namespace Xamarin.Forms.Platform.Android
 			itemsView.RemoveLogicalChild(View);
 		}
 
-
-		public static SimpleViewHolder FromText(string text, Context context, Func<int> width, Func<int> height)
-		{
-			var textView = new TextView(context) { Text = text };
-
-			var targetWidth = width();
-			var targetHeight = height();
-
-			var layoutParams = new ViewGroup.LayoutParams(targetWidth, targetHeight);
-			textView.LayoutParameters = layoutParams;
-   
-			textView.Gravity = GravityFlags.Center;
-
-			return new SimpleViewHolder(textView, null);
-		}
-
 		public static SimpleViewHolder FromText(string text, Context context, bool fill = true)
 		{
 			var textView = new TextView(context) { Text = text };
