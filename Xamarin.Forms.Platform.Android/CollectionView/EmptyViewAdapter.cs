@@ -297,7 +297,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (item is DataTemplate dataTemplate)
 			{
-
 				var content = dataTemplate.CreateContent() as View;
 				sizeRequest = content.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 			}
