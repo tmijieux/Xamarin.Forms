@@ -50,13 +50,6 @@ jobs:
           packageType: 'sdk'
           version: $(DOTNET_VERSION)
 
-      - script: |
-          export PATH="$PATH:/Users/vsts/.dotnet/tools"
-          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet new globaljson --sdk-version $(DOTNET_VERSION)
-        displayName: 'Add globaljson file'
-        condition: ne(variables['DOTNET_VERSION'], '')
-
       - task: NuGetToolInstaller@1
         displayName: 'Use NuGet'
         condition: ne(variables['NUGET_VERSION'], '')
