@@ -1,19 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	internal class ObservableItemsSource : IItemsViewSource
 	{
 		readonly IEnumerable _itemsSource;
-		readonly ICollectionChangedNotifier _notifier;
+		readonly ICollectionChangedNotifier _notifier; 
+  		readonly SynchronizationContext _synchronizationContext;
 		bool _disposed;
 
 		public ObservableItemsSource(IEnumerable itemSource, ICollectionChangedNotifier notifier)
 		{
 			_itemsSource = itemSource as IList ?? itemSource as IEnumerable;
 			_notifier = notifier;
+			_synchronizationContext = SynchronizationContext.Current;
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
@@ -82,26 +85,39 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			if (SynchronizationContext.Current != _synchronizationContext)
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					_notifier.NotifyDataSetChanged();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				// Raises the CollectionChanged event on the creator thread
+				_synchronizationContext.Send(RaiseCollectionChanged, args);
 			}
+			else
+			{
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						_notifier.NotifyDataSetChanged();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+		}
+
+		void RaiseCollectionChanged(object param)
+		{
+			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)
