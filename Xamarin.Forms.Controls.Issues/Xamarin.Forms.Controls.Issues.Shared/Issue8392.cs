@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue8392()
 		{
+			Title = "Issue 8392";
+
 			var collectionView = new CollectionView
 			{
 				ItemTemplate = new Issue8392DataTemplate()
@@ -48,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnAppearing();
 
 			if (Content is RefreshView refreshView
-				&& refreshView.Content is CollectionView collectionView)
+				&& refreshView.Content is CollectionView)
 			{
 				refreshView.IsRefreshing = true;
 			}
@@ -103,7 +105,7 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue8392ViewModel : BindableObject
 	{
 		bool _isRefreshing;
-  
+
 		public ICommand PullToRefreshCommand => new Command(async () => await ExecutePullToRefreshCommand());
 
 		public bool IsRefreshing
@@ -124,10 +126,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 			try
 			{
+				// If the items load without exception, the test has passed.
 				for (int i = 0; i < 30; i++)
 				{
 					await Task.Delay(200).ConfigureAwait(false);
-					DataList.Add(new Issue8392Model(i));
+					DataList.Add(new Issue8392Model(i + 1));
 				}
 			}
 			finally

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly double _itemHeight;
 		readonly double _itemWidth;
 		readonly Thickness _itemSpacing;
+		readonly SynchronizationContext _synchronizationContext;
 		readonly INotifyCollectionChanged _notifyCollectionChanged;
 
 		public ObservableItemTemplateCollection(IList itemsSource, DataTemplate itemTemplate, BindableObject container, 
@@ -38,6 +40,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (itemSpacing.HasValue)
 				_itemSpacing = itemSpacing.Value;
 
+			_synchronizationContext = SynchronizationContext.Current;
+
 			for (int n = 0; n < itemsSource.Count; n++)
 			{
 				// We're using this as a source for a ListViewBase, and we need INCC to work. So ListViewBase is going
@@ -56,26 +60,36 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			if (SynchronizationContext.Current != _synchronizationContext)
+				_synchronizationContext.Post(RaiseCollectionChanged, args);
+			else
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					Reset();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						Reset();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
+		}
+
+		void RaiseCollectionChanged(object param)
+		{
+			InnerCollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
