@@ -1,6 +1,7 @@
 using Android.Support.V7.Widget;
 using AView = Android.Views.View;
 using ALayoutDirection = Android.Views.LayoutDirection;
+using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -82,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 				increment = increment * -1;
 			}
 
-			CurrentTargetPosition = CurrentTargetPosition + increment;
+			CurrentTargetPosition = Math.Min(CurrentTargetPosition + increment, layoutManager.ItemCount);
 
 			return CurrentTargetPosition;
 		}
